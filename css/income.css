@@ -1,0 +1,35 @@
+body {
+  overflow-x: hidden;
+}
+#table_div {
+  width:40%;
+  height:100%;
+  float:left;
+}
+#chart_div {
+  width: 60%;
+  height: 50%;
+  float: right;
+}
+
+#income_div {
+  width: 60%;
+  height: 45%;
+  float: right;
+}
+
+#addContainer {
+  width: 60%;
+  height: 5%;
+  float: right;
+}
+
+@media (min-width: 1000px) {
+  #chart_div {
+    margin-left: 0;
+  }
+  #pie_charts {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
