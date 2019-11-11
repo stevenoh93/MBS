@@ -15,6 +15,15 @@ var CATEGORY_ORDER = {
   '맘국수': 6
 };
 
+function newEntry() {
+  let entry = {};
+  entry.date = '';
+  entry.name = '';
+  entry.value = '';
+  entry.category = '';
+  return entry;
+}
+
 function compareEntries(e1, e2) {
   let ret = 0;
   if (e1.date == e2.date) {
@@ -26,7 +35,6 @@ function compareEntries(e1, e2) {
     if (e1.date < e2.date) return ret = -1;
     else return ret = 1;
   }
-  console.log(ret);
   return ret;
 }
 
@@ -43,14 +51,30 @@ function convertToObjectList(list) {
   return out;
 }
 
+// Gets the last month's data as a list, given list is sorted in ascending date
 function getMostRecentMonthData(data) {
   var i = data.length - 1;
-  var lastMonth = data[i][0];
-  var recentMonth = [['Task', 'Income per Category']];
-  while (data[i][0] == lastMonth) {
-    recentMonth.push([data[i][3], data[i][2]['v']]);
+  var lastMonth = data[i].date;
+  var recentMonth = [['Task', 'Category']];
+  while (data[i].date == lastMonth) {
+    recentMonth.push([data[i].category, data[i].value['v']]);
     i--;
   }
-  console.log(recentMonth[3]);
   return recentMonth;
+}
+
+// Aggergate multiple rows of monthly data to single row
+function buildBarChartTable(data) {
+  var out = [];
+  for (var i=0; i < data.length; i++) {
+    var date = data[i].date;
+    var monthEntry = {date: date};
+    while (i < data.length && data[i].date == date) {
+      monthEntry[data[i].category] = data[i].value['v'];
+      i++;
+    }
+    out.push(buildBarChartRow(monthEntry));
+    i--;
+  }
+  return out;
 }
