@@ -12,7 +12,7 @@ incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
 function getTableData() {
   var data = new google.visualization.DataTable();
   data.addColumn('string', '날짜');
-  data.addColumn('string', '지출내역');
+  data.addColumn('string', '수입내역');
   data.addColumn('number', '금액');
   data.addColumn('string', '대분류');
   data.addRows(rawIncomeData);
@@ -53,6 +53,9 @@ function drawVisualization() {
   google.visualization.events.addListener(chart, 'click', clickHandler);
 }
 
+/*
+  Handle click events on the income table
+*/
 function clickHandler(e) {
   // TODO: Hide the clicked bar
   // if (e.targetID.split("#")[0] == "legendentry") {
@@ -100,3 +103,19 @@ function buildBarChartRow(entry) {
   row.push(values.reduce((a,b) => a + b, 0));
   return row;
 }
+
+function onNewEntry(entry) {
+
+}
+
+$(document).ready(function(){
+	$("#income-input-form").submit(function(event){
+    console.log(decodeURIComponent($('#income-input-form').serialize()));
+		// onNewEntry();
+		return false;
+	});
+});
+
+$(function() {
+  $( "#income-date-input" ).datepicker();
+});
