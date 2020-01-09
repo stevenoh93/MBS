@@ -15,13 +15,19 @@ var CATEGORY_ORDER = {
   '맘국수': 6
 };
 
-function newEntry() {
-  let entry = {};
-  entry.date = '';
-  entry.name = '';
-  entry.value = '';
-  entry.category = '';
-  return entry;
+const formatter = new Intl.NumberFormat('ja-JP', {
+  style: 'currency',
+  currency: 'KRW',
+  minimumFractionDigits: 0
+})
+
+// Accept string or numbers, return formatted entry for tables
+function newFormattedEntry(date, name, value, category) {
+  return [date, name, {v: value, f: String(formatter.format(value))}, category];
+}
+
+function addRawIncomeEntry(entry) {
+
 }
 
 function compareEntries(e1, e2) {
@@ -41,12 +47,12 @@ function compareEntries(e1, e2) {
 function convertToObjectList(list) {
   let out = [];
   for (let item of list) {
-    var entry = {};
-    entry.date = item[0];
-    entry.name = item[1];
-    entry.value = item[2];
-    entry.category = item[3];
-    out.push(entry);
+    out.push({
+      date: item[0],
+      name: item[1],
+      value: item[2],
+      category: item[3]
+    });
   }
   return out;
 }

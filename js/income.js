@@ -104,18 +104,26 @@ function buildBarChartRow(entry) {
   return row;
 }
 
-function onNewEntry(entry) {
-
+function onNewIncomeInput(entry) {
+  date = entry[0].split("=")[1];
+  category = entry[1].split("=")[1]
+  name = category + " 수입 합계";
+  value = entry[2].split("=")[1];
+  // save this data
+  console.log(newFormattedEntry(date, name, value, category));
 }
 
 $(document).ready(function(){
 	$("#income-input-form").submit(function(event){
-    console.log(decodeURIComponent($('#income-input-form').serialize()));
-		// onNewEntry();
-		return false;
+    inputDataString = decodeURIComponent($('#income-input-form').serialize());
+		onNewIncomeInput(inputDataString.split("&"));
+		return true;
 	});
+
 });
 
 $(function() {
-  $( "#income-date-input" ).datepicker();
+  $( "#income-date-input" ).datepicker({
+    dateFormat:'yy-mm-dd'
+  });
 });
