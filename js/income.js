@@ -9,6 +9,13 @@ google.charts.setOnLoadCallback(drawTableData);
 
 incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
 
+function refreshIncomeData() {
+  incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
+  drawIncome();
+  drawTableData();
+  drawVisualization();
+}
+
 function getTableData() {
   var data = new google.visualization.DataTable();
   data.addColumn('string', '날짜');
@@ -35,7 +42,6 @@ function drawTableData() {
   var table = new google.visualization.Table(document.getElementById('table_div'));
   table.draw(data, {showRowNumber: true, width: '100%', height: '100%', sortAscending: true, sortColumn: 0});
 }
-
 
 function drawVisualization() {
   var data = google.visualization.arrayToDataTable(formatToBarChartData(incomeData));
@@ -110,7 +116,8 @@ function onNewIncomeInput(entry) {
   name = category + " 수입 합계";
   value = entry[2].split("=")[1];
   // save this data
-  console.log(newFormattedEntry(date, name, value, category));
+  addRawIncome(date, name, value, category);
+  refreshIncomeData();
 }
 
 $(document).ready(function(){

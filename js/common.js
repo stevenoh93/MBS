@@ -19,15 +19,11 @@ const formatter = new Intl.NumberFormat('ja-JP', {
   style: 'currency',
   currency: 'KRW',
   minimumFractionDigits: 0
-})
+});
 
-// Accept string or numbers, return formatted entry for tables
-function newFormattedEntry(date, name, value, category) {
-  return [date, name, {v: value, f: String(formatter.format(value))}, category];
-}
-
-function addRawIncomeEntry(entry) {
-
+function addRawIncome(date, name, value, category) {
+  entry = [date, name, {v: parseInt(value), f: String(formatter.format(value))}, category];
+  rawIncomeData.push(entry);
 }
 
 function compareEntries(e1, e2) {
