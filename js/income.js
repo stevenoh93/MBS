@@ -118,6 +118,20 @@ function onNewIncomeInput(entry) {
   // save this data
   addRawIncome(date, name, value, category);
   refreshIncomeData();
+
+  console.log(newFormattedEntry(date, name, value, category));
+  var xhr = new XMLHttpRequest();
+  var url = "/newIncome";
+  var data = JSON.stringify(newFormattedEntry(date, name, value, category));
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-type","application/json");
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+          // do something with response
+          console.log(xhr.responseText);
+      }
+  };
+  xhr.send(data);
 }
 
 $(document).ready(function(){
