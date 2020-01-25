@@ -1,5 +1,6 @@
 var express = require("express");
-const bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
+var fs = require('fs');
 
 var app = express();
 
@@ -14,10 +15,18 @@ app.use('/data', express.static(__dirname + '/data'));
 app.use('/pages', express.static(__dirname + '/pages'));
 app.use('/img', express.static(__dirname + '/img'));
 
+const DATA_PATH = __dirname + '/data/';
+const INCOME_DATA_PATH = DATA_PATH + 'income.json';
+const EXPENSE_DATA_PATH = DATA_PATH + 'expense.json';
+
+app.get('/getIncome', (req, res) => {
+  fs.readFile(INCOME_DATA_PATH, "utf8", (err, data) => {
+    res.send(data);
+  });
+});
+
 app.post('/newIncome', (req, res) => {
-  console.log("Got new income!");
-  console.log(req.body);
-  // console.log(req.body);
+  appendJSON(INCOME_DATA_PATH, req.body);
   res.send("Cool");
 });
 
@@ -25,3 +34,11 @@ var server = app.listen(8000, function() {
   var port = server.address().port;
   console.log("Server started at http://localhost:%s", port);
 });
+
+function appendJSON(path, entry) {
+  fs.readFile(path, "utf8", function (err, data) {
+    var incomeJSON = JSON.parse(data);
+    incomeJSON.income.push(entry);
+    fs.writeFile(path, JSON.stringify(incomeJSON), (err) => {});
+  });
+}

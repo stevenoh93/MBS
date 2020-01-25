@@ -21,6 +21,10 @@ const formatter = new Intl.NumberFormat('ja-JP', {
   minimumFractionDigits: 0
 });
 
+function newFormattedEntry(date, name, value, category) {
+  return [date.replace(/-/g, "/"), name, {v: parseInt(value), f: String(formatter.format(value))}, category];
+}
+
 function addRawIncome(date, name, value, category) {
   entry = [date, name, {v: parseInt(value), f: String(formatter.format(value))}, category];
   rawIncomeData.push(entry);
@@ -79,4 +83,25 @@ function buildBarChartTable(data) {
     i--;
   }
   return out;
+}
+
+function postRequest(url, data, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-type","application/json");
+  xhr.onreadystatechange = function() {
+    callback(xhr.responseText);
+  };
+  console.log("data= " + data);
+  xhr.send(data);
+}
+
+function getRequest(url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.setRequestHeader("Content-type","application/json");
+  xhr.onreadystatechange = function() {
+    callback(xhr.responseText);
+  };
+  xhr.send();
 }

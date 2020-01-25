@@ -3,17 +3,18 @@ google.charts.load('current', {'packages':['corechart']});
 google.charts.load('current', {'packages':['table']});
 
 // Set a callback to run when the Google Visualization API is loaded.
-google.charts.setOnLoadCallback(drawIncome);
-google.charts.setOnLoadCallback(drawVisualization);
-google.charts.setOnLoadCallback(drawTableData);
+google.charts.setOnLoadCallback(refreshIncomeData);
 
-incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
+var rawIncomeData;
 
 function refreshIncomeData() {
-  incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
-  drawIncome();
-  drawTableData();
-  drawVisualization();
+  getRequest('/getIncome', function(data) {
+    rawIncomeData = JSON.parse(data).income;
+    incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
+    drawIncome();
+    drawTableData();
+    drawVisualization();
+  })
 }
 
 function getTableData() {
@@ -116,22 +117,11 @@ function onNewIncomeInput(entry) {
   name = category + " 수입 합계";
   value = entry[2].split("=")[1];
   // save this data
-  addRawIncome(date, name, value, category);
-  refreshIncomeData();
-
-  console.log(newFormattedEntry(date, name, value, category));
-  var xhr = new XMLHttpRequest();
-  var url = "/newIncome";
-  var data = JSON.stringify(newFormattedEntry(date, name, value, category));
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader("Content-type","application/json");
-  xhr.onreadystatechange = function () {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-          // do something with response
-          console.log(xhr.responseText);
-      }
-  };
-  xhr.send(data);
+  postRequest(
+    '/newIncome',
+    JSON.stringify(newFormattedEntry(date, name, value, category)),
+    function (data) {}
+  );
 }
 
 $(document).ready(function(){
@@ -140,7 +130,6 @@ $(document).ready(function(){
 		onNewIncomeInput(inputDataString.split("&"));
 		return true;
 	});
-
 });
 
 $(function() {
