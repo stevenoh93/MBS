@@ -2,15 +2,19 @@
 google.charts.load('current', {'packages':['corechart']});
 google.charts.load('current', {'packages':['table']});
 
-// Set a callback to run when the Google Visualization API is loaded.
-google.charts.setOnLoadCallback(refreshIncomeData);
+document.addEventListener('keydown', onKeyPressed);
 
 var rawIncomeData;
+var tableVisual;
+
+// Set a callback to run when the Google Visualization API is loaded.
+google.charts.setOnLoadCallback(refreshIncomeData);
 
 function refreshIncomeData() {
   getRequest('/getIncome', function(data) {
     rawIncomeData = JSON.parse(data).income;
     incomeData = convertToObjectList(rawIncomeData).sort(compareEntries);
+    tableVisual = new google.visualization.Table(document.getElementById('table_div'));
     drawIncome();
     drawTableData();
     drawVisualization();
@@ -40,48 +44,20 @@ function drawIncome() {
 
 function drawTableData() {
   var data = getTableData();
-  var table = new google.visualization.Table(document.getElementById('table_div'));
-  table.draw(data, {showRowNumber: true, width: '100%', height: '100%', sortAscending: true, sortColumn: 0});
+  tableVisual.draw(data, {showRowNumber: true, width: '100%', height: '100%', sortAscending: true, sortColumn: 0});
 }
 
 function drawVisualization() {
   var data = google.visualization.arrayToDataTable(formatToBarChartData(incomeData));
-
   var options = {
-    title : 'Monthly Coffee Production by Country',
+    title : '분류별 월 수입',
     vAxes: [{title: '수입'}, {title: '총 수입'}],
     hAxis: {title: '월'},
     seriesType: 'bars',
     series: {6: {type: 'line', targetAxisIndex: '1'}}
    };
-
-  var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-  chart.draw(data, options);
-  google.visualization.events.addListener(chart, 'click', clickHandler);
-}
-
-/*
-  Handle click events on the income table
-*/
-function clickHandler(e) {
-  // TODO: Hide the clicked bar
-  // if (e.targetID.split("#")[0] == "legendentry") {
-  //   console.log("Hello");
-  //   console.log(e);
-  //   var clickedSeries = e.targetID.split("#")[1]
-  //   var data = google.visualization.arrayToDataTable(formatToBarChartData(incomeData));
-  //   var options = {
-  //     title : 'Monthly Coffee Production by Country',
-  //     vAxes: [{title: '수입'}, {title: '총 수입'}],
-  //     hAxis: {title: '달'},
-  //     seriesType: 'bars',
-  //     series: {6: {type: 'line', targetAxisIndex: '1'}}
-  //    };
-  //   var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-  //   var view = new google.visualization.DataView(data);
-  //   view.setColumns([0, 1, 2]);
-  //   chart.draw(view, options);
-  // }
+   var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+   chart.draw(data, options);
 }
 
 function formatToBarChartData(data) {
@@ -137,3 +113,28 @@ $(function() {
     dateFormat:'yy-mm-dd'
   });
 });
+
+function onKeyPressed(e) {
+  if (e.key == "Delete") {
+      onDeleteKeyPressed(e);
+  }
+}
+
+/*
+  Delete key event
+*/
+function onDeleteKeyPressed(e) {
+  console.log("Hello");
+
+  var selection = tableVisual.getSelection();
+  console.log(selection);
+  okay = confirm("선택된 줄을 지우시겠습니까?")
+  if (okay) {
+    // save this data
+    postRequest(
+      '/deleteIncome',
+      JSON.stringify(formatDeletePayload(selection)),
+      function (data) {refreshIncomeData();}
+    );
+  }
+}

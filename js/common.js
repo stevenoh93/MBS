@@ -21,6 +21,11 @@ const formatter = new Intl.NumberFormat('ja-JP', {
   minimumFractionDigits: 0
 });
 
+function formatDeletePayload(selection) {
+  var payload = {startIndex: selection[0].row, lastIndex: selection[0].row};
+  return payload;
+}
+
 function newFormattedEntry(date, name, value, category) {
   return [date.replace(/-/g, "/"), name, {v: parseInt(value), f: String(formatter.format(value))}, category];
 }

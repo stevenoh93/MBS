@@ -30,6 +30,11 @@ app.post('/newIncome', (req, res) => {
   res.send("Cool");
 });
 
+app.post('/deleteIncome', (req, res) => {
+  deleteElement(INCOME_DATA_PATH, req.body);
+  res.send("Done");
+});
+
 var server = app.listen(8000, function() {
   var port = server.address().port;
   console.log("Server started at http://localhost:%s", port);
@@ -39,6 +44,14 @@ function appendJSON(path, entry) {
   fs.readFile(path, "utf8", function (err, data) {
     var incomeJSON = JSON.parse(data);
     incomeJSON.income.push(entry);
+    fs.writeFile(path, JSON.stringify(incomeJSON), (err) => {});
+  });
+}
+
+function deleteElement(path, entry) {
+  fs.readFile(path, "utf8", function (err, data) {
+    var incomeJSON = JSON.parse(data);
+    incomeJSON.income.splice(entry.startIndex, entry.lastIndex-entry.startIndex + 1);
     fs.writeFile(path, JSON.stringify(incomeJSON), (err) => {});
   });
 }
